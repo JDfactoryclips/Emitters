@@ -1,0 +1,75 @@
+let emitters = [];
+
+function setup() {
+  createCanvas(600, 400);
+  // Make 3 emitters at fixed spots
+  emitters.push(new Emitter(100, 200));
+  emitters.push(new Emitter(300, 200));
+  emitters.push(new Emitter(500, 200));
+}
+
+function draw() {
+  background(50, 50, 80);
+
+  for (let e of emitters) {
+    e.emit();
+    e.update();
+    e.show();
+  }
+}
+
+class Particle {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.speedX = random(-1, 1);
+    this.speedY = random(-2, -0.5);
+    this.size = 8;
+    this.lifetime = 255;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.lifetime -= 4;
+  }
+
+  isDead() {
+    return this.lifetime <= 0;
+  }
+
+  show() {
+    noStroke();
+    fill(200, 200, 255, this.lifetime);
+    ellipse(this.x, this.y, this.size);
+  }
+}
+
+class Emitter {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.particles = [];
+  }
+
+  emit() {
+    // Make one new particle every frame
+    this.particles.push(new Particle(this.x, this.y));
+  }
+
+  update() {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      this.particles[i].update();
+      if (this.particles[i].isDead()) {
+        this.particles.splice(i, 1);
+      }
+    }
+  }
+
+  show() {
+    for (let p of this.particles) {
+      p.show();
+    }
+  }
+}
+
